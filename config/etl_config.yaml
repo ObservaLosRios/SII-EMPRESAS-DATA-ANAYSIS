@@ -1,0 +1,59 @@
+# ETL Configuration for SII Empresas Data Analysis
+# Data Science Project - Clean Code & SOLID Principles
+
+# File Paths
+raw_data_path: "data/raw/PUB_COMU_RUBR.csv"
+processed_data_path: "data/processed/"
+output_data_path: "data/output/"
+
+# Data Processing Parameters
+encoding: "utf-8"
+decimal_separator: ","
+thousands_separator: "."
+
+# Processing Parameters
+chunk_size: 10000
+max_workers: 4
+DATETIME_COLUMNS:
+  - "año_comercial"
+
+NUMERIC_COLUMNS:
+  - "numero_empresas"
+  - "ventas_anuales_uf"
+  - "numero_trabajadores_dependientes"
+  - "renta_neta_uf"
+  - "trabajadores_ponderados_meses"
+  - "numero_trabajadores_femenino"
+  - "renta_neta_femenino_uf"
+  - "trabajadores_femenino_ponderados"
+  - "numero_trabajadores_masculino"
+  - "renta_neta_masculino_uf"
+  - "trabajadores_masculino_ponderados"
+  - "numero_trabajadores_honorarios"
+  - "honorarios_pagados_uf"
+  - "trabajadores_honorarios_ponderados"
+  - "numero_trabajadores_honorarios_femenino"
+  - "honorarios_femenino_uf"
+  - "trabajadores_honorarios_femenino_ponderados"
+  - "numero_trabajadores_honorarios_masculino"
+  - "honorarios_masculino_uf"
+  - "trabajadores_honorarios_masculino_ponderados"
+
+CATEGORICAL_COLUMNS:
+  - "comuna"
+  - "provincia"
+  - "region"
+  - "rubro_economico"
+
+# Data Quality Rules
+DATA_QUALITY:
+  REQUIRED_COLUMNS: 25
+  MIN_YEAR: 2005
+  MAX_YEAR: 2024
+  ALLOWED_NULL_PERCENTAGE: 0.1
+
+# Logging Configuration
+LOGGING:
+  LEVEL: "INFO"
+  FORMAT: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+  FILE: "logs/etl_process.log"

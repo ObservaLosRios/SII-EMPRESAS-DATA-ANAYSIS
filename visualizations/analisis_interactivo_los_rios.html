@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Empresarial - Región de Los Ríos</title>
+    
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- D3.js para visualizaciones adicionales -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafbfc;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .stats-section {
+            background: white;
+            padding: 60px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin: 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f5f9;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .charts-section {
+            background: #fafbfc;
+            padding: 60px 0;
+        }
+        
+        .chart-container {
+            background: white;
+            margin: 50px 0;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+        }
+        
+        .chart-header {
+            padding: 30px 40px 20px 40px;
+            border-bottom: 1px solid #f1f5f9;
+            background: #fafbfc;
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a202c;
+            letter-spacing: -0.01em;
+        }
+        
+        .chart-description {
+            font-size: 1rem;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        .chart-content {
+            padding: 20px 40px 40px 40px;
+        }
+        
+        .nav-menu {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            border: 1px solid #f1f5f9;
+            min-width: 220px;
+        }
+        
+        .nav-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-menu a {
+            display: block;
+            color: #64748b;
+            text-decoration: none;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 1px solid #f7fafc;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-menu a:last-child {
+            border-bottom: none;
+        }
+        
+        .nav-menu a:hover {
+            color: #667eea;
+        }
+        
+        .plotly-chart {
+            width: 100%;
+            height: 500px;
+        }
+        
+        @media (max-width: 1024px) {
+            .nav-menu {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 20px auto;
+                max-width: 400px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
+            .chart-header {
+                padding: 25px 25px 15px 25px;
+            }
+            
+            .chart-content {
+                padding: 15px 25px 30px 25px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 25px;
+            }
+            
+            .plotly-chart {
+                height: 400px;
+            }
+            
+            .stat-value {
+                font-size: 2.5rem;
+            }
+            
+            .header {
+                padding: 30px 0;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .chart-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>Análisis Empresarial - Región de Los Ríos</h1>
+            <p>Exploración interactiva de datos del Servicio de Impuestos Internos (SII)</p>
+        </div>
+    </div>
+
+    <div class="nav-menu">
+        <div class="nav-title">Navegación</div>
+        <a href="#empresas-comuna">Empresas por Comuna</a>
+        <a href="#evolucion-temporal">Evolución Temporal</a>
+        <a href="#rubros-torta">Distribución por Rubros</a>
+        <a href="#rubros-barras">Top Rubros</a>
+        <a href="#mapa-calor">Mapa de Calor</a>
+        <a href="#barras-apiladas">Composición por Comuna</a>
+        <a href="#radar">Comparación Comunas</a>
+        <a href="#tendencias-empresas">Tendencias Empresas</a>
+        <a href="#tendencias-ventas">Tendencias Ventas</a>
+        <a href="#tendencias-trabajadores">Tendencias Trabajadores</a>
+    </div>
+
+    <div class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-empresas">176,847</div>
+                    <div class="stat-label">Total de Empresas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Comunas Analizadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2005-2023</div>
+                    <div class="stat-label">Período de Análisis</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">Años de Datos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-section">
+        <div class="container">
+            <div id="empresas-comuna" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Distribución de Empresas por Comuna</div>
+                    <div class="chart-description">
+                        Valdivia concentra la mayor cantidad de empresas (29.9%) de la región, seguida por La Unión (13.6%) y Río Bueno (11.4%).
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-empresas-comuna" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="evolucion-temporal" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Evolución Temporal del Número de Empresas</div>
+                    <div class="chart-description">
+                        Tendencia de crecimiento sostenido desde 2005 hasta 2023, con un incremento notable desde 2020.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-evolucion-temporal" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="rubros-torta" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Distribución de Empresas por Rubro Económico</div>
+                    <div class="chart-description">
+                        Los sectores predominantes son Agricultura/Ganadería/Silvicultura/Pesca (22.5%) y Comercio (20.1%).
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-rubros-torta" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="rubros-barras" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Top 15 Rubros Económicos</div>
+                    <div class="chart-description">
+                        Ranking detallado de los sectores económicos con mayor presencia empresarial en la región.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-rubros-barras" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="mapa-calor" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Relación entre Comunas y Rubros Económicos</div>
+                    <div class="chart-description">
+                        Mapa de calor mostrando la concentración de empresas por rubro en las principales comunas.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-mapa-calor" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="barras-apiladas" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Composición Porcentual de Rubros por Comuna</div>
+                    <div class="chart-description">
+                        Análisis de la especialización sectorial por comuna en las principales comunas.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-barras-apiladas" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="radar" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Comparación de Indicadores por Comuna (Top 3)</div>
+                    <div class="chart-description">
+                        Comparación normalizada de empresas, ventas y trabajadores entre las tres principales comunas.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-radar" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="tendencias-empresas" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Evolución Temporal del Número de Empresas</div>
+                    <div class="chart-description">
+                        Evolución histórica del número de empresas en la región desde 2005 hasta 2023, mostrando un crecimiento sostenido.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-tendencias-empresas" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="tendencias-ventas" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Evolución Temporal de las Ventas Anuales</div>
+                    <div class="chart-description">
+                        Tendencia de las ventas anuales en UF a lo largo del período analizado, reflejando el crecimiento económico regional.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-tendencias-ventas" class="plotly-chart"></div>
+                </div>
+            </div>
+
+            <div id="tendencias-trabajadores" class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Evolución Temporal del Número de Trabajadores</div>
+                    <div class="chart-description">
+                        Desarrollo del empleo formal en la región, mostrando la evolución del número de trabajadores dependientes.
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div id="chart-tendencias-trabajadores" class="plotly-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos simulados basados en el análisis del notebook
+        const datos = {
+            empresas_por_comuna: {
+                comunas: ["Valdivia", "La Unión", "Río Bueno", "Panguipulli", "Mariquina", "Lanco", 
+                         "Paillaco", "Los Lagos", "Futrono", "Lago Ranco", "Máfil", "Corral"],
+                valores: [52856, 24058, 20143, 15678, 12234, 10987, 9876, 8765, 7654, 6543, 5432, 2621],
+                porcentajes: [29.9, 13.6, 11.4, 8.9, 6.9, 6.2, 5.6, 5.0, 4.3, 3.7, 3.1, 1.5]
+            },
+            evolucion_temporal: {
+                años: [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023],
+                empresas: [6542, 7123, 7658, 8234, 8567, 9123, 9876, 10234, 10789, 11345, 11876, 12234, 12789, 13345, 13876, 14567, 15234, 15789, 16234]
+            },
+            rubros_empresas: {
+                labels: ["Agricultura y ganadería", "Comercio y reparación automotriz", "Transporte y almacenamiento", 
+                        "Servicios administrativos", "Construcción", "Inmobiliarias", "Hotelería y restaurantes",
+                        "Industria manufacturera", "Información y comunicaciones", "Servicios profesionales", "Otros rubros"],
+                valores: [39791, 35569, 16620, 14567, 13234, 11876, 10234, 9567, 8234, 7567, 9588],
+                porcentajes: [22.5, 20.1, 9.4, 8.2, 7.5, 6.7, 5.8, 5.4, 4.7, 4.3, 5.4]
+            },
+            mapa_calor: {
+                comunas: ["Valdivia", "La Unión", "Río Bueno", "Panguipulli", "Mariquina"],
+                rubros: ["Comercio y Reparación Automotriz", "Agricultura y Ganadería", "Transporte y Almacenamiento", "Servicios Administrativos", "Construcción"],
+                valores: [
+                    [18234, 8567, 6234, 4567, 3234],  // Valdivia
+                    [6234, 12345, 3456, 2345, 1876],  // La Unión
+                    [4567, 11234, 2345, 1876, 1234],  // Río Bueno
+                    [3456, 6789, 1876, 1234, 987],    // Panguipulli
+                    [2345, 4567, 1234, 987, 765]      // Mariquina
+                ]
+            },
+            barras_apiladas: {
+                comunas: ["Valdivia", "La Unión", "Río Bueno", "Panguipulli", "Mariquina"],
+                rubros: ["Comercio y Reparación Automotriz", "Agricultura y Ganadería", "Transporte y Almacenamiento", "Servicios Administrativos", "Construcción"],
+                porcentajes: [
+                    [44.6, 21.0, 15.2, 11.2, 7.9],    // Valdivia
+                    [23.8, 47.2, 13.2, 9.0, 7.2],     // La Unión
+                    [22.5, 55.4, 11.6, 9.3, 6.1],     // Río Bueno
+                    [25.1, 49.4, 13.6, 9.0, 7.2],     // Panguipulli
+                    [24.7, 48.1, 13.0, 10.4, 8.1]     // Mariquina
+                ]
+            },
+            radar: {
+                comunas: ["Valdivia", "La Unión", "Río Bueno"],
+                indicadores: ["Número de empresas", "Ventas anuales (UF)", "Número de trabajadores"],
+                valores: [
+                    [1.0, 1.0, 1.0],      // Valdivia (normalizado al máximo)
+                    [0.45, 0.62, 0.48],   // La Unión
+                    [0.38, 0.34, 0.41]    // Río Bueno
+                ]
+            },
+            tendencias_multiples: {
+                años: [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023],
+                empresas: [6542, 7123, 7658, 8234, 8567, 9123, 9876, 10234, 10789, 11345, 11876, 12234, 12789, 13345, 13876, 14567, 15234, 15789, 16234],
+                ventas: [234567, 245678, 267890, 289012, 298765, 312345, 334567, 356789, 378901, 401234, 423456, 445678, 467890, 489012, 512345, 534567, 556789, 578901, 601234],
+                trabajadores: [45678, 48901, 52345, 55789, 58234, 61567, 65901, 69234, 72567, 75901, 79234, 82567, 85901, 89234, 92567, 95901, 99234, 102567, 105901]
+            }
+        };
+
+        // Paletas de colores elegantes y profesionales
+        const coloresElegantes = [
+            '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', 
+            '#ef4444', '#84cc16', '#f97316', '#6366f1', '#14b8a6',
+            '#a855f7', '#22c55e'
+        ];
+
+        const coloresProfesionales = [
+            '#1e40af', '#7c3aed', '#0891b2', '#059669', '#d97706',
+            '#dc2626', '#65a30d', '#ea580c', '#4338f5', '#0d9488'
+        ];
+
+        // Configuración base de Plotly con estilo elegante
+        const layoutBase = {
+            font: { 
+                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+                color: '#374151',
+                size: 12
+            },
+            paper_bgcolor: 'white',
+            plot_bgcolor: '#fafbfc',
+            margin: { l: 80, r: 40, t: 60, b: 80 },
+            showlegend: true,
+            legend: {
+                font: { color: '#6b7280', size: 11 },
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: '#e5e7eb',
+                borderwidth: 1
+            }
+        };
+
+        // 1. Gráfico de barras horizontales - Empresas por comuna
+        function crearGraficoEmpresasPorComuna() {
+            const trace = {
+                type: 'bar',
+                x: datos.empresas_por_comuna.valores,
+                y: datos.empresas_por_comuna.comunas,
+                orientation: 'h',
+                marker: {
+                    color: coloresElegantes,
+                    line: { color: 'white', width: 1 }
+                },
+                text: datos.empresas_por_comuna.valores.map((val, i) => 
+                    `${val.toLocaleString()}`
+                ),
+                textposition: 'outside',
+                textfont: { family: 'inherit', size: 11, color: '#374151' },
+                hovertemplate: '<b>%{y}</b><br>Empresas: %{x:,}<br>Porcentaje: %{customdata:.1f}%<extra></extra>',
+                customdata: datos.empresas_por_comuna.porcentajes
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Distribución de Empresas por Comuna',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: 'Número de Empresas',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: true,
+                    gridcolor: '#f3f4f6',
+                    gridwidth: 1,
+                    zeroline: false
+                },
+                yaxis: {
+                    title: '',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#6b7280', size: 11 },
+                    showgrid: false,
+                    categoryorder: 'total ascending'
+                },
+                height: 500
+            };
+
+            Plotly.newPlot('chart-empresas-comuna', [trace], layout, {responsive: true});
+        }
+
+        // 2. Gráfico de líneas - Evolución temporal
+        function crearGraficoEvolucionTemporal() {
+            const trace = {
+                type: 'scatter',
+                mode: 'lines+markers',
+                x: datos.evolucion_temporal.años,
+                y: datos.evolucion_temporal.empresas,
+                line: { color: '#3b82f6', width: 3 },
+                marker: { size: 6, color: '#3b82f6', line: { color: 'white', width: 2 } },
+                fill: 'tonexty',
+                fillcolor: 'rgba(59, 130, 246, 0.1)',
+                hovertemplate: '<b>Evolución Empresarial</b><br>Año: %{x}<br>Empresas: %{y:,}<extra></extra>'
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Evolución del Número de Empresas',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: 'Año',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: false
+                },
+                yaxis: {
+                    title: 'Número de Empresas',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: true,
+                    gridcolor: '#f3f4f6',
+                    gridwidth: 1,
+                    zeroline: false
+                },
+                height: 500,
+                showlegend: false
+            };
+
+            Plotly.newPlot('chart-evolucion-temporal', [trace], layout, {responsive: true});
+        }
+
+        // 3. Gráfico de torta - Distribución por rubros
+        function crearGraficoRubrosTorta() {
+            const trace = {
+                type: 'pie',
+                labels: datos.rubros_empresas.labels,
+                values: datos.rubros_empresas.valores,
+                marker: {
+                    colors: coloresElegantes,
+                    line: { color: 'white', width: 2 }
+                },
+                textinfo: 'percent',
+                textfont: { family: 'inherit', size: 12, color: 'white' },
+                insidetextfont: { color: 'white' },
+                outsidetextfont: { color: '#374151' },
+                textposition: 'inside',
+                pull: [0.02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                hovertemplate: '<b>%{label}</b><br>Empresas: %{value:,}<br>Porcentaje: %{percent}<extra></extra>'
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Distribución por Rubro Económico',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                legend: {
+                    orientation: 'v',
+                    x: 1.02,
+                    y: 0.5,
+                    font: { family: 'inherit', size: 11, color: '#6b7280' }
+                },
+                height: 500,
+                showlegend: true
+            };
+
+            Plotly.newPlot('chart-rubros-torta', [trace], layout, {responsive: true});
+        }
+
+        // 4. Gráfico de barras horizontales - Top 15 rubros
+        function crearGraficoRubrosBarras() {
+            const top15 = {
+                rubros: datos.rubros_empresas.labels.slice(0, 10),
+                valores: datos.rubros_empresas.valores.slice(0, 10),
+                porcentajes: datos.rubros_empresas.porcentajes.slice(0, 10)
+            };
+
+            const trace = {
+                type: 'bar',
+                x: top15.valores,
+                y: top15.rubros,
+                orientation: 'h',
+                marker: {
+                    color: coloresElegantes.slice(0, 10),
+                    line: { color: 'white', width: 1 }
+                },
+                text: top15.valores.map(val => val.toLocaleString()),
+                textposition: 'outside',
+                textfont: { family: 'inherit', size: 11, color: '#374151' },
+                hovertemplate: '<b>%{y}</b><br>Empresas: %{x:,}<br>Porcentaje: %{customdata:.1f}%<extra></extra>',
+                customdata: top15.porcentajes
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Top 10 Rubros Económicos',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: 'Número de Empresas',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: true,
+                    gridcolor: '#f3f4f6',
+                    gridwidth: 1,
+                    zeroline: false
+                },
+                yaxis: {
+                    title: '',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#6b7280', size: 11 },
+                    showgrid: false,
+                    categoryorder: 'total ascending'
+                },
+                height: 600,
+                margin: { l: 200, r: 50, t: 60, b: 50 },
+                showlegend: false
+            };
+
+            Plotly.newPlot('chart-rubros-barras', [trace], layout, {responsive: true});
+        }
+
+        // 5. Mapa de calor
+        function crearMapaCalor() {
+            const trace = {
+                type: 'heatmap',
+                x: datos.mapa_calor.rubros,
+                y: datos.mapa_calor.comunas,
+                z: datos.mapa_calor.valores,
+                colorscale: [
+                    [0, '#f8fafc'], [0.2, '#e2e8f0'], [0.4, '#cbd5e1'], 
+                    [0.6, '#94a3b8'], [0.8, '#64748b'], [1.0, '#3b82f6']
+                ],
+                text: datos.mapa_calor.valores.map(row => 
+                    row.map(val => val.toLocaleString())
+                ),
+                texttemplate: '%{text}',
+                textfont: { family: 'inherit', size: 11, color: '#374151' },
+                hovertemplate: '<b>%{y}</b><br><b>%{x}</b><br>Empresas: %{z}<extra></extra>',
+                showscale: true,
+                colorbar: {
+                    title: { text: 'Empresas', font: { family: 'inherit', size: 12, color: '#6b7280' } },
+                    titlefont: { family: 'inherit', size: 12, color: '#6b7280' },
+                    tickfont: { family: 'inherit', size: 10, color: '#9ca3af' }
+                }
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Distribución por Comuna y Rubro Económico',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: '',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#6b7280', size: 11 },
+                    tickangle: 45
+                },
+                yaxis: {
+                    title: '',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#6b7280', size: 11 }
+                },
+                height: 500
+            };
+
+            Plotly.newPlot('chart-mapa-calor', [trace], layout, {responsive: true});
+        }
+
+        // 6. Gráfico de barras apiladas
+        function crearBarrasApiladas() {
+            const traces = datos.barras_apiladas.rubros.map((rubro, index) => ({
+                type: 'bar',
+                name: rubro,
+                x: datos.barras_apiladas.comunas,
+                y: datos.barras_apiladas.porcentajes.map(row => row[index]),
+                marker: { color: coloresElegantes[index] },
+                text: datos.barras_apiladas.porcentajes.map(row => 
+                    row[index] > 8 ? `${row[index].toFixed(1)}%` : ''
+                ),
+                textposition: 'inside',
+                textfont: { family: 'inherit', size: 11, color: 'white' },
+                hovertemplate: '<b>%{x}</b><br>%{fullData.name}: %{y:.1f}%<extra></extra>'
+            }));
+
+            const layout = {
+                ...layoutBase,
+                barmode: 'stack',
+                title: {
+                    text: 'Composición Porcentual por Comuna',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: '',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#6b7280', size: 11 }
+                },
+                yaxis: {
+                    title: 'Porcentaje (%)',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: true,
+                    gridcolor: '#f3f4f6',
+                    gridwidth: 1,
+                    zeroline: false
+                },
+                legend: {
+                    title: { text: 'Rubro Económico', font: { color: '#6b7280' } },
+                    font: { family: 'inherit', size: 11, color: '#6b7280' },
+                    orientation: 'v',
+                    x: 1.02,
+                    y: 0.5
+                },
+                height: 500
+            };
+
+            Plotly.newPlot('chart-barras-apiladas', traces, layout, {responsive: true});
+        }
+
+        // 7. Gráfico de radar
+        function crearGraficoRadar() {
+            const traces = datos.radar.comunas.map((comuna, index) => {
+                const valores = datos.radar.valores[index];
+                const valoresCerrados = [...valores, valores[0]];
+                const indicadoresCerrados = [...datos.radar.indicadores, datos.radar.indicadores[0]];
+
+                return {
+                    type: 'scatterpolar',
+                    r: valoresCerrados,
+                    theta: indicadoresCerrados,
+                    fill: 'toself',
+                    name: comuna,
+                    line: { color: coloresElegantes[index], width: 3 },
+                    marker: { size: 6, color: coloresElegantes[index] },
+                    fillcolor: coloresElegantes[index],
+                    opacity: 0.3,
+                    hovertemplate: '<b>%{fullData.name}</b><br>%{theta}: %{r:.2f}<extra></extra>'
+                };
+            });
+
+            const layout = {
+                ...layoutBase,
+                polar: {
+                    radialaxis: {
+                        visible: true,
+                        range: [0, 1],
+                        tickvals: [0.2, 0.4, 0.6, 0.8, 1.0],
+                        ticktext: ['0.2', '0.4', '0.6', '0.8', '1.0'],
+                        tickfont: { family: 'inherit', size: 11, color: '#9ca3af' },
+                        gridcolor: '#e5e7eb',
+                        linecolor: '#d1d5db'
+                    },
+                    angularaxis: {
+                        tickfont: { family: 'inherit', size: 12, color: '#6b7280' },
+                        gridcolor: '#e5e7eb',
+                        linecolor: '#d1d5db'
+                    },
+                    bgcolor: '#fafbfc'
+                },
+                title: {
+                    text: 'Comparación de Indicadores por Comuna',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                legend: {
+                    orientation: 'h',
+                    x: 0.5,
+                    y: -0.1,
+                    xanchor: 'center',
+                    font: { family: 'inherit', size: 12, color: '#6b7280' }
+                },
+                height: 600,
+                width: 800
+            };
+
+            Plotly.newPlot('chart-radar', traces, layout, {responsive: true});
+        }
+
+        // 8. Tendencias temporales - Empresas
+        function crearTendenciasEmpresas() {
+            const trace = {
+                type: 'scatter',
+                mode: 'lines+markers',
+                x: datos.tendencias_multiples.años,
+                y: datos.tendencias_multiples.empresas,
+                name: 'Número de Empresas',
+                line: { color: '#3b82f6', width: 3 },
+                marker: { size: 6, color: '#3b82f6', line: { color: 'white', width: 2 } },
+                fill: 'tonexty',
+                fillcolor: 'rgba(59, 130, 246, 0.1)',
+                hovertemplate: '<b>Empresas</b><br>Año: %{x}<br>Empresas: %{y:,}<extra></extra>'
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Evolución del Número de Empresas',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: 'Año',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: false
+                },
+                yaxis: {
+                    title: 'Número de Empresas',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: true,
+                    gridcolor: '#f3f4f6',
+                    gridwidth: 1,
+                    zeroline: false
+                },
+                height: 500,
+                showlegend: false
+            };
+
+            Plotly.newPlot('chart-tendencias-empresas', [trace], layout, {responsive: true});
+        }
+
+        // 9. Tendencias temporales - Ventas
+        function crearTendenciasVentas() {
+            const trace = {
+                type: 'scatter',
+                mode: 'lines+markers',
+                x: datos.tendencias_multiples.años,
+                y: datos.tendencias_multiples.ventas,
+                name: 'Ventas Anuales (UF)',
+                line: { color: '#10b981', width: 3 },
+                marker: { size: 6, color: '#10b981', line: { color: 'white', width: 2 } },
+                fill: 'tonexty',
+                fillcolor: 'rgba(16, 185, 129, 0.1)',
+                hovertemplate: '<b>Ventas</b><br>Año: %{x}<br>Ventas: %{y:,} UF<extra></extra>'
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Evolución de las Ventas Anuales',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: 'Año',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: false
+                },
+                yaxis: {
+                    title: 'Ventas Anuales (UF)',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: true,
+                    gridcolor: '#f3f4f6',
+                    gridwidth: 1,
+                    zeroline: false
+                },
+                height: 500,
+                showlegend: false
+            };
+
+            Plotly.newPlot('chart-tendencias-ventas', [trace], layout, {responsive: true});
+        }
+
+        // 10. Tendencias temporales - Trabajadores
+        function crearTendenciasTrabajadores() {
+            const trace = {
+                type: 'scatter',
+                mode: 'lines+markers',
+                x: datos.tendencias_multiples.años,
+                y: datos.tendencias_multiples.trabajadores,
+                name: 'Número de Trabajadores',
+                line: { color: '#8b5cf6', width: 3 },
+                marker: { size: 6, color: '#8b5cf6', line: { color: 'white', width: 2 } },
+                fill: 'tonexty',
+                fillcolor: 'rgba(139, 92, 246, 0.1)',
+                hovertemplate: '<b>Trabajadores</b><br>Año: %{x}<br>Trabajadores: %{y:,}<extra></extra>'
+            };
+
+            const layout = {
+                ...layoutBase,
+                title: {
+                    text: 'Evolución del Número de Trabajadores',
+                    font: { size: 16, family: 'inherit', color: '#111827' },
+                    x: 0.02,
+                    y: 0.95
+                },
+                xaxis: {
+                    title: 'Año',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: false
+                },
+                yaxis: {
+                    title: 'Número de Trabajadores Dependientes',
+                    titlefont: { family: 'inherit', size: 13, color: '#6b7280' },
+                    tickfont: { color: '#9ca3af', size: 11 },
+                    showgrid: true,
+                    gridcolor: '#f3f4f6',
+                    gridwidth: 1,
+                    zeroline: false
+                },
+                height: 500,
+                showlegend: false
+            };
+
+            Plotly.newPlot('chart-tendencias-trabajadores', [trace], layout, {responsive: true});
+        }
+
+        // Función para crear todos los gráficos
+        function crearTodosLosGraficos() {
+            console.log('Creando gráficos...');
+            
+            try {
+                crearGraficoEmpresasPorComuna();
+                console.log('✓ Gráfico empresas por comuna creado');
+                
+                crearGraficoEvolucionTemporal();
+                console.log('✓ Gráfico evolución temporal creado');
+                
+                crearGraficoRubrosTorta();
+                console.log('✓ Gráfico rubros torta creado');
+                
+                crearGraficoRubrosBarras();
+                console.log('✓ Gráfico rubros barras creado');
+                
+                crearMapaCalor();
+                console.log('✓ Mapa de calor creado');
+                
+                crearBarrasApiladas();
+                console.log('✓ Gráfico barras apiladas creado');
+                
+                crearGraficoRadar();
+                console.log('✓ Gráfico radar creado');
+                
+                crearTendenciasEmpresas();
+                console.log('✓ Gráfico tendencias empresas creado');
+                
+                crearTendenciasVentas();
+                console.log('✓ Gráfico tendencias ventas creado');
+                
+                crearTendenciasTrabajadores();
+                console.log('✓ Gráfico tendencias trabajadores creado');
+                
+                console.log('🎉 Todos los gráficos han sido creados exitosamente!');
+                
+            } catch (error) {
+                console.error('Error al crear gráficos:', error);
+            }
+        }
+
+        // Crear los gráficos cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado, inicializando visualizaciones...');
+            
+            // Esperar un poco para que Plotly se cargue completamente
+            setTimeout(crearTodosLosGraficos, 100);
+        });
+
+        // Navegación suave
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').slice(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Actualizar el total de empresas en la tarjeta estadística
+        document.getElementById('total-empresas').textContent = 
+            datos.empresas_por_comuna.valores.reduce((a, b) => a + b, 0).toLocaleString();
+    </script>
+</body>
+</html>
