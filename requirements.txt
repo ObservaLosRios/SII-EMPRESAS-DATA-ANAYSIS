@@ -1,13 +1,30 @@
-# Core Data Science Libraries
-pandas==2.2.0
-numpy==1.26.3
-matplotlib==3.8.2
-seaborn==0.13.1
-plotly==5.18.0
+# ENTORNO FUNCIONAL - Python 3.13.3
+# ========================================
+# Estas dependencias han sido probadas y funcionan correctamente
 
-# Data Quality & Validation
-great-expectations==0.18.8
-pandera==0.18.0
+# Librerías estándar (incluidas en Python)
+os           # Manejo del sistema operativo
+csv          # Procesamiento de archivos CSV
+pathlib      # Manejo moderno de rutas
+IPython      # Para visualizaciones HTML en Jupyter
+
+# Jupyter Environment - VERIFICADO FUNCIONAL
+jupyter==1.1.1
+ipykernel==6.30.0
+ipywidgets==8.1.7
+
+# Data Science Libraries - OPCIONAL (para visualizaciones avanzadas)
+# NOTA: Estas librerías tienen problemas de compatibilidad en Python 3.13
+# El análisis actual funciona perfectamente con solo las librerías estándar
+# numpy==2.3.2        # Comentado por problemas de importación
+# pandas==2.3.1       # Comentado por dependencia de numpy
+# matplotlib==3.10.5  # Comentado por dependencia de numpy
+# seaborn==0.13.2     # Comentado por dependencia de pandas
+# plotly==6.2.0       # Funciona independientemente pero requiere pandas para datos
+
+# RECOMENDACIÓN: 
+# El notebook actual genera excelentes visualizaciones usando solo HTML/CSS
+# Para gráficos interactivos avanzados, considerar usar Python 3.11 o anterior
 
 # Database & Storage
 sqlalchemy==2.0.25

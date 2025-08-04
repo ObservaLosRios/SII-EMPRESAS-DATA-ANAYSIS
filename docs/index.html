@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Empresas - Región de Los Ríos (2005-2023)</title>
+    <style>
+        /* Reset y configuración base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            background-color: #ffffff;
+            color: #2c3e50;
+        }
+        
+        /* Header principal */
+        .main-header {
+            background: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 2px solid #e8e8e8;
+        }
+        
+        .main-title {
+            font-size: 28px;
+            font-weight: normal;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            font-weight: normal;
+        }
+        
+        /* Navegación */
+        .nav-container {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-weight: 600;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: #DC143C;
+            color: white;
+        }
+        
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Secciones */
+        .section {
+            margin-bottom: 80px;
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: normal;
+            text-align: center;
+            margin-bottom: 50px;
+            color: #2c3e50;
+            border-bottom: 3px solid #DC143C;
+            padding-bottom: 10px;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .chart-section {
+            margin-bottom: 60px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: normal;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-family: 'Georgia', serif;
+        }
+        
+        /* Estilos para tendencias temporales */
+        .trends-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Estilos para empresas por comuna */
+        .empresas-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .bar-chart-svg {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #e1e4e8;
+            border-radius: 4px;
+        }
+        
+        /* Estilos para análisis de rubros */
+        .rubros-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .heatmap-container {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            padding: 20px;
+        }
+        
+        .heatmap-grid {
+            display: flex;
+            flex-direction: column;
+            font-family: Georgia, serif;
+        }
+        
+        .heatmap-header {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        
+        .heatmap-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        
+        .heatmap-row-label {
+            width: 100px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .heatmap-column-label {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: center;
+            line-height: 1.1;
+            margin-right: 2px;
+        }
+        
+        .heatmap-cell {
+            width: 120px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: normal;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+            position: relative;
+        }
+        
+        .color-scale {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 20px;
+            align-self: flex-start;
+            margin-top: 60px;
+        }
+        
+        .color-scale-bar {
+            width: 24px;
+            height: 320px;
+            background: linear-gradient(to bottom, 
+                #1B4A6B 0%,
+                #326590 16%,
+                #4C7FA3 32%,
+                #6B96B6 48%,
+                #8BADC3 64%,
+                #C1D5E0 80%,
+                #FAFBFC 100%);
+            border: 1px solid #e1e4e8;
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .color-scale-labels {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 320px;
+            margin-left: 8px;
+            font-size: 13px;
+            color: #1e293b;
+            min-width: 38px;
+        }
+
+        .color-scale-label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: Georgia, serif;
+            font-weight: normal;
+            height: 1px;
+        }
+        
+        .stacked-chart-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .stacked-chart-svg {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #e1e4e8;
+            border-radius: 4px;
+        }
+        
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-family: Georgia, serif;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+        
+        /* Estilos comunes */
+        .grid-line {
+            stroke: #e8e8e8;
+            stroke-width: 0.5;
+        }
+        
+        .axis-line {
+            stroke: #999;
+            stroke-width: 1;
+        }
+        
+        .data-line {
+            fill: none;
+            stroke-width: 2.5;
+        }
+        
+        .data-point {
+            r: 3;
+            cursor: pointer;
+        }
+        
+        .data-point:hover {
+            r: 5;
+        }
+        
+        .axis-label {
+            font-family: 'Georgia', serif;
+            font-size: 12px;
+            fill: #666;
+            text-anchor: middle;
+        }
+        
+        .y-axis-label {
+            font-family: 'Georgia', serif;
+            font-size: 11px;
+            fill: #666;
+            text-anchor: end;
+        }
+        
+        .x-axis-label {
+            font-family: 'Georgia', serif;
+            font-size: 11px;
+            fill: #666;
+            text-anchor: middle;
+        }
+        
+        .bar {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+        }
+        
+        .bar-text {
+            font-family: Georgia, serif;
+            font-size: 11px;
+            fill: #1e293b;
+            pointer-events: none;
+        }
+        
+        .axis-text {
+            font-family: Georgia, serif;
+            font-size: 12px;
+            fill: #1e293b;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-family: 'Georgia', serif;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            white-space: nowrap;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #f8f9fa;
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 2px solid #e8e8e8;
+            margin-top: 60px;
+        }
+        
+        .footer-text {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 22px;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .heatmap-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .heatmap-column-label {
+                width: 80px;
+                font-size: 9px;
+                height: 50px;
+            }
+            
+            .heatmap-cell {
+                width: 80px;
+                height: 40px;
+                font-size: 10px;
+            }
+            
+            .heatmap-row-label {
+                width: 80px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Principal -->
+    <header class="main-header">
+        <h1 class="main-title">Análisis de Empresas - Región de Los Ríos</h1>
+        <p class="subtitle">Datos del Servicio de Impuestos Internos (SII) • Período 2005-2023</p>
+    </header>
+    
+    <!-- Navegación -->
+    <nav class="nav-container">
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-section="tendencias">Tendencias Temporales</a>
+            <a href="#" class="nav-link" data-section="empresas">Empresas por Comuna</a>
+            <a href="#" class="nav-link" data-section="rubros">Análisis de Rubros</a>
+        </div>
+    </nav>
+    
+    <!-- Container Principal -->
+    <div class="container">
+        <!-- Sección 1: Tendencias Temporales -->
+        <section id="tendencias" class="section active">
+            <h2 class="section-title">Tendencias Temporales de Indicadores Empresariales (2005-2023)</h2>
+            
+            <div class="trends-container">
+                <!-- Gráfico 1: Evolución del Número de Empresas -->
+                <div class="chart-section">
+                    <div class="chart-title">Evolución del Número de Empresas</div>
+                    <div class="chart-container">
+                        <svg class="chart-svg" id="empresasChart"></svg>
+                    </div>
+                </div>
+                
+                <!-- Gráfico 2: Evolución de Ventas Anuales en UF -->
+                <div class="chart-section">
+                    <div class="chart-title">Evolución de Ventas Anuales en UF</div>
+                    <div class="chart-container">
+                        <svg class="chart-svg" id="ventasChart"></svg>
+                    </div>
+                </div>
+                
+                <!-- Gráfico 3: Evolución del Número de Trabajadores Dependientes -->
+                <div class="chart-section">
+                    <div class="chart-title">Evolución del Número de Trabajadores Dependientes</div>
+                    <div class="chart-container">
+                        <svg class="chart-svg" id="trabajadoresChart"></svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección 2: Empresas por Comuna -->
+        <section id="empresas" class="section">
+            <h2 class="section-title">Número de Empresas por Comuna en la Región de Los Ríos</h2>
+            
+            <div class="empresas-container">
+                <div class="chart-section">
+                    <svg class="bar-chart-svg" id="empresasComunaChart"></svg>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección 3: Análisis de Rubros -->
+        <section id="rubros" class="section">
+            <h2 class="section-title">Análisis de Rubros Económicos por Comuna</h2>
+            
+            <div class="rubros-container">
+                <!-- Mapa de Calor -->
+                <div class="chart-section">
+                    <div class="chart-title">Distribución de Empresas por Comuna y Rubro Económico (Top 5)</div>
+                    <div class="heatmap-container" id="heatmapContainer">
+                        <!-- Se generará con JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Gráfico de Barras Apiladas -->
+                <div class="chart-section">
+                    <div class="chart-title">Composición Porcentual de Rubros Económicos por Comuna (Top 5)</div>
+                    <div class="stacked-chart-container">
+                        <svg class="stacked-chart-svg" id="stackedChart"></svg>
+                    </div>
+                    <div class="legend" id="legend"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            Análisis desarrollado con datos del Servicio de Impuestos Internos (SII) de Chile<br>
+            Región de Los Ríos • CER uACH 
+        </p>
+    </footer>
+    
+    <!-- Tooltip global -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // =============================================================================
+        // DATOS GLOBALES
+        // =============================================================================
+        
+        // Datos de tendencias temporales (análisis estadístico real)
+        const trendsData = {
+            años: [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023],
+            empresas: [17846, 18222, 18463, 18631, 18929, 19371, 20043, 20653, 21196, 21901, 22413, 22983, 24267, 26399, 27385, 27709, 30389, 32129, 32603],
+            ventas: [16236362, 16277203, 17718101, 17531160, 16943466, 17483209, 18765338, 19240908, 18943843, 19664731, 22075490, 23257968, 22156987, 22146618, 22705550, 21909617, 24385921, 25480551, 25657651],
+            trabajadores: [70021, 72580, 80635, 82217, 77808, 82462, 87575, 85203, 86017, 89341, 93493, 100542, 103149, 103484, 102170, 95594, 107629, 113788, 107295]
+        };
+
+        // Datos de empresas por comuna
+        const empresasComunaData = [
+            {comuna: 'Valdivia', empresas: 191845, porcentaje: 43.449579},
+            {comuna: 'La Unión', empresas: 48465, porcentaje: 10.977889},
+            {comuna: 'Río Bueno', empresas: 40709, porcentaje: 9.220891},
+            {comuna: 'Panguipulli', empresas: 38970, porcentaje: 8.827019},
+            {comuna: 'Paillaco', empresas: 24089, porcentaje: 5.456005},
+            {comuna: 'Mariquina', empresas: 20918, porcentaje: 4.738111},
+            {comuna: 'Lanco', empresas: 19538, porcentaje: 4.425672},
+            {comuna: 'Los Lagos', empresas: 19034, porcentaje: 4.311533},
+            {comuna: 'Futrono', empresas: 15996, porcentaje: 3.623217},
+            {comuna: 'Lago Ranco', empresas: 9436, porcentaje: 2.137719},
+            {comuna: 'Máfil', empresas: 7898, porcentaje: 1.789460},
+            {comuna: 'Corral', empresas: 4634, porcentaje: 1.049905}
+        ];
+
+        // Datos del mapa de calor (valores exactos del notebook coincidiendo con la imagen)
+        const heatmapData = {
+            comunas: ['La Unión', 'Paillaco', 'Panguipulli', 'Río Bueno', 'Valdivia'],
+            rubros: [
+                'Agricultura<br>y Ganadería',
+                'Comercio y<br>Reparación<br>Automotriz', 
+                'Construcción',
+                'Industria<br>manufacturera',
+                'Transporte y<br>Almacenamiento'
+            ],
+            rubrosOriginal: [
+                'Agricultura, ganadería, silvicultura y pesca',
+                'Comercio al por mayor y al por menor; reparación de vehículos automotores y motocicletas',
+                'Construcción',
+                'Industria manufacturera',
+                'Transporte y almacenamiento'
+            ],
+            valores: [
+                [13836, 11576, 3625, 3190, 6444],    // La Unión
+                [7573, 7011, 1280, 1472, 2459],      // Paillaco
+                [5280, 12966, 2910, 2976, 3197],     // Panguipulli
+                [15355, 10451, 2335, 2053, 3248],    // Río Bueno
+                [14797, 52856, 19199, 16434, 18789]  // Valdivia
+            ]
+        };
+
+        // Datos para el gráfico de barras apiladas (porcentajes exactos del notebook)
+        const stackedData = {
+            comunas: ['Río Bueno', 'La Unión', 'Paillaco', 'Panguipulli', 'Valdivia'],
+            rubros: [
+                'Agricultura, ganadería, silvicultura y pesca',
+                'Comercio al por mayor y al por menor; reparación de vehículos automotores y motocicletas',
+                'Construcción',
+                'Industria manufacturera',
+                'Transporte y almacenamiento'
+            ],
+            rubrosAbrev: [
+                'Agricultura y Ganadería',
+                'Comercio y Reparación Automotriz',
+                'Construcción',
+                'Industria manufacturera',
+                'Transporte y Almacenamiento'
+            ],
+            porcentajes: [
+                [45.9, 31.3, 7.0, 6.1, 9.7],     // Río Bueno
+                [35.8, 29.9, 9.4, 8.3, 16.7],    // La Unión
+                [38.3, 35.4, 6.5, 7.4, 12.4],    // Paillaco
+                [19.3, 47.4, 10.7, 10.9, 11.7],  // Panguipulli
+                [12.1, 43.3, 15.7, 13.5, 15.4]   // Valdivia
+            ]
+        };
+
+        // Paletas de colores
+        const colors = {
+            trends: {
+                empresas: '#1f4e79',
+                ventas: '#6297c7',
+                trabajadores: '#e67e22'
+            },
+            empresasComuna: [
+                '#1B4F72', '#2E8B57', '#B8860B', '#8B4513', '#4682B4', '#6B8E23',
+                '#CD853F', '#2F4F4F', '#483D8B', '#556B2F', '#8B6914', '#654321'
+            ],
+            heatmap: [
+                "#FAFBFC", "#F4F6F8", "#E8EDF3", "#D6E3F0", "#C1D5E0",
+                "#A8C2D0", "#8BADC3", "#6B96B6", "#4C7FA3", "#326590", "#1B4A6B"
+            ],
+            stacked: [
+                "#2E5984", "#8B9DC3", "#DFB067", "#81A88D", "#C4A484"
+            ]
+        };
+
+        // =============================================================================
+        // FUNCIONES UTILITARIAS
+        // =============================================================================
+        
+        function formatNumber(num) {
+            return num.toLocaleString('es-ES');
+        }
+
+        function formatAxisNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(0) + 'k';
+            }
+            return num.toString();
+        }
+
+        function getHeatmapColor(value, minVal, maxVal) {
+            const normalizedValue = (value - minVal) / (maxVal - minVal);
+            const colorIndex = Math.floor(normalizedValue * (colors.heatmap.length - 1));
+            return colors.heatmap[Math.min(colorIndex, colors.heatmap.length - 1)];
+        }
+
+        // Función para formatear valores como en la imagen
+        function formatearValor(valor) {
+            if (valor >= 10000) {
+                return (valor / 1000).toFixed(3) + 'k';
+            }
+            return valor.toLocaleString('es-ES');
+        }
+
+        // =============================================================================
+        // NAVEGACIÓN
+        // =============================================================================
+        
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Remover active de todos los links y secciones
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Agregar active al link clickeado
+                    link.classList.add('active');
+                    
+                    // Mostrar la sección correspondiente
+                    const sectionId = link.getAttribute('data-section');
+                    document.getElementById(sectionId).classList.add('active');
+                    
+                    // Inicializar gráficos de la sección activa
+                    setTimeout(() => {
+                        if (sectionId === 'tendencias') {
+                            initTrendsCharts();
+                        } else if (sectionId === 'empresas') {
+                            initEmpresasComunaChart();
+                        } else if (sectionId === 'rubros') {
+                            initRubrosCharts();
+                        }
+                    }, 100);
+                });
+            });
+        }
+
+        // =============================================================================
+        // TENDENCIAS TEMPORALES
+        // =============================================================================
+        
+        function createTrendChart(svgId, values, color, yLabel, tooltipLabel) {
+            const svg = document.getElementById(svgId);
+            if (!svg) return;
+            
+            const rect = svg.getBoundingClientRect();
+            const margin = {top: 20, right: 40, bottom: 50, left: 70};
+            const width = rect.width - margin.left - margin.right;
+            const height = rect.height - margin.top - margin.bottom;
+            
+            // Escalas
+            const xScale = (year, index) => margin.left + (index / (trendsData.años.length - 1)) * width;
+            const yMin = Math.min(...values);
+            const yMax = Math.max(...values);
+            const yRange = yMax - yMin;
+            const yScale = (value) => margin.top + height - ((value - yMin + yRange * 0.1) / (yRange * 1.2)) * height;
+            
+            // Limpiar SVG
+            svg.innerHTML = '';
+            
+            // Grid horizontal
+            for (let i = 0; i <= 5; i++) {
+                const y = margin.top + (height / 5) * i;
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', margin.left);
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', margin.left + width);
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'grid-line');
+                svg.appendChild(line);
+            }
+            
+            // Etiquetas del eje Y
+            for (let i = 0; i <= 5; i++) {
+                const value = yMin + (yMax - yMin) * (i / 5);
+                const y = margin.top + height - (height / 5) * i;
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', margin.left - 10);
+                text.setAttribute('y', y + 4);
+                text.setAttribute('class', 'y-axis-label');
+                text.textContent = formatAxisNumber(Math.round(value));
+                svg.appendChild(text);
+            }
+            
+            // Etiquetas del eje X
+            const yearSteps = [2005, 2010, 2015, 2020];
+            yearSteps.forEach(year => {
+                const index = trendsData.años.indexOf(year);
+                if (index >= 0) {
+                    const x = xScale(year, index);
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', x);
+                    text.setAttribute('y', margin.top + height + 20);
+                    text.setAttribute('class', 'x-axis-label');
+                    text.textContent = year;
+                    svg.appendChild(text);
+                }
+            });
+            
+            // Línea de datos
+            let pathData = '';
+            for (let i = 0; i < trendsData.años.length; i++) {
+                const x = xScale(trendsData.años[i], i);
+                const y = yScale(values[i]);
+                if (i === 0) {
+                    pathData += `M ${x} ${y}`;
+                } else {
+                    pathData += ` L ${x} ${y}`;
+                }
+            }
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('class', 'data-line');
+            path.setAttribute('stroke', color);
+            svg.appendChild(path);
+            
+            // Puntos de datos
+            for (let i = 0; i < trendsData.años.length; i++) {
+                const x = xScale(trendsData.años[i], i);
+                const y = yScale(values[i]);
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('class', 'data-point');
+                circle.setAttribute('fill', color);
+                circle.setAttribute('stroke', 'white');
+                circle.setAttribute('stroke-width', '1');
+                
+                // Tooltip
+                circle.addEventListener('mouseenter', (e) => {
+                    const tooltip = document.getElementById('tooltip');
+                    tooltip.innerHTML = `
+                        <strong>${tooltipLabel}</strong><br>
+                        Año: ${trendsData.años[i]}<br>
+                        ${yLabel}: ${values[i].toLocaleString('es-ES')}
+                    `;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY - 10) + 'px';
+                });
+                
+                circle.addEventListener('mouseleave', () => {
+                    document.getElementById('tooltip').style.display = 'none';
+                });
+                
+                svg.appendChild(circle);
+            }
+        }
+
+        function initTrendsCharts() {
+            createTrendChart('empresasChart', trendsData.empresas, colors.trends.empresas, 'Número de Empresas', 'Evolución del Número de Empresas');
+            createTrendChart('ventasChart', trendsData.ventas, colors.trends.ventas, 'Ventas Anuales (UF)', 'Evolución de Ventas Anuales');
+            createTrendChart('trabajadoresChart', trendsData.trabajadores, colors.trends.trabajadores, 'Número de Trabajadores', 'Evolución del Número de Trabajadores');
+        }
+
+        // =============================================================================
+        // EMPRESAS POR COMUNA
+        // =============================================================================
+        
+        function initEmpresasComunaChart() {
+            const svg = document.getElementById('empresasComunaChart');
+            if (!svg) return;
+            
+            const margin = {top: 50, right: 200, bottom: 80, left: 120};
+            const width = 1100 - margin.left - margin.right;
+            const height = 700 - margin.top - margin.bottom;
+
+            const maxEmpresas = Math.max(...empresasComunaData.map(d => d.empresas));
+            const xScale = (value) => (value / maxEmpresas) * width;
+            const yScale = (index) => (index * (height / empresasComunaData.length)) + 30;
+            const barHeight = (height / empresasComunaData.length) * 0.7;
+
+            let svgContent = `
+                <!-- Grid lines verticales -->
+                ${[0, 50000, 100000, 150000, 200000].map(tick => `
+                    <line x1="${margin.left + xScale(tick)}" y1="${margin.top}" 
+                          x2="${margin.left + xScale(tick)}" y2="${margin.top + height}" 
+                          class="grid-line"/>
+                `).join('')}
+                
+                <!-- Labels del eje X -->
+                ${[0, 50000, 100000, 150000, 200000].map(tick => `
+                    <text x="${margin.left + xScale(tick)}" y="${margin.top + height + 35}" 
+                          text-anchor="middle" class="axis-text">
+                        ${formatNumber(tick)}
+                    </text>
+                `).join('')}
+                
+                <!-- Título eje X -->
+                <text x="${margin.left + width/2}" y="${margin.top + height + 65}" 
+                      text-anchor="middle" class="axis-text" style="font-weight: 600;">
+                    Número de Empresas
+                </text>
+                
+                <!-- Barras y labels -->
+                ${empresasComunaData.map((d, i) => {
+                    const barWidth = xScale(d.empresas);
+                    const y = margin.top + yScale(i);
+                    const color = colors.empresasComuna[i];
+                    
+                    return `
+                        <!-- Barra -->
+                        <rect x="${margin.left}" y="${y}" 
+                              width="${barWidth}" height="${barHeight}" 
+                              fill="${color}" stroke="white" stroke-width="0.5"
+                              class="bar" 
+                              data-comuna="${d.comuna}"
+                              data-empresas="${d.empresas}"
+                              data-porcentaje="${d.porcentaje.toFixed(1)}"/>
+                        
+                        <!-- Label de la comuna -->
+                        <text x="${margin.left - 10}" y="${y + barHeight/2 + 4}" 
+                              text-anchor="end" class="axis-text">
+                            ${d.comuna}
+                        </text>
+                        
+                        <!-- Texto sobre la barra -->
+                        <text x="${margin.left + barWidth + 10}" y="${y + barHeight/2 + 4}" 
+                              text-anchor="start" class="bar-text">
+                            ${formatNumber(d.empresas)} (${d.porcentaje.toFixed(1)}%)
+                        </text>
+                    `;
+                }).join('')}
+            `;
+
+            svg.innerHTML = svgContent;
+
+            // Agregar interactividad
+            const bars = svg.querySelectorAll('.bar');
+            bars.forEach(bar => {
+                bar.addEventListener('mouseenter', (e) => {
+                    const comuna = e.target.getAttribute('data-comuna');
+                    const empresas = e.target.getAttribute('data-empresas');
+                    const porcentaje = e.target.getAttribute('data-porcentaje');
+                    
+                    const tooltip = document.getElementById('tooltip');
+                    tooltip.innerHTML = `
+                        <strong>${comuna}</strong><br>
+                        Empresas: ${formatNumber(empresas)}<br>
+                        Porcentaje: ${porcentaje}%
+                    `;
+                    tooltip.style.display = 'block';
+                });
+                
+                bar.addEventListener('mousemove', (e) => {
+                    const tooltip = document.getElementById('tooltip');
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY - 10) + 'px';
+                });
+                
+                bar.addEventListener('mouseleave', () => {
+                    document.getElementById('tooltip').style.display = 'none';
+                });
+            });
+        }
+
+        // =============================================================================
+        // ANÁLISIS DE RUBROS
+        // =============================================================================
+        
+        function initRubrosCharts() {
+            createHeatmap();
+            createStackedChart();
+        }
+
+        // Crear mapa de calor
+        function createHeatmap() {
+            const heatmapGrid = document.getElementById('heatmap');
+            const colorScaleLabels = document.getElementById('colorScaleLabels');
+            const tooltip = document.getElementById('tooltip');
+            
+            // Encontrar valores min y max para la escala de colores
+            const allValues = heatmapData.valores.flat();
+            const minVal = Math.min(...allValues);
+            const maxVal = Math.max(...allValues);
+            
+            // Crear encabezado con etiquetas de rubros
+            let headerContent = '<div class="heatmap-header">';
+            headerContent += '<div class="heatmap-row-label"></div>'; // Espacio vacío para alineación
+            heatmapData.rubros.forEach(rubro => {
+                headerContent += `<div class="heatmap-column-label">${rubro}</div>`;
+            });
+            headerContent += '</div>';
+            
+            // Crear filas de datos
+            let dataContent = '';
+            heatmapData.comunas.forEach((comuna, i) => {
+                dataContent += '<div class="heatmap-row">';
+                dataContent += `<div class="heatmap-row-label">${comuna}</div>`;
+                
+                heatmapData.valores[i].forEach((valor, j) => {
+                    const backgroundColor = getHeatmapColor(valor, minVal, maxVal);
+                    const textColor = valor > maxVal * 0.6 ? 'white' : '#2C3E50';
+                    const valorFormateado = formatearValor(valor);
+                    
+                    dataContent += `<div class="heatmap-cell" 
+                                        style="background-color: ${backgroundColor}; color: ${textColor};"
+                                        data-comuna="${comuna}"
+                                        data-rubro="${heatmapData.rubrosOriginal[j]}"
+                                        data-valor="${valor.toLocaleString('es-ES')}">
+                                        ${valorFormateado}
+                                    </div>`;
+                });
+                dataContent += '</div>';
+            });
+            
+            const container = document.getElementById('heatmapContainer');
+            container.innerHTML = `
+                <div class="heatmap-grid" id="heatmap">
+                    ${headerContent + dataContent}
+                </div>
+                <div class="color-scale">
+                    <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                        <div class="color-scale-bar" id="colorScaleBar"></div>
+                        <div class="color-scale-labels" id="colorScaleLabels">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Crear etiquetas de la escala de colores (valores específicos como en la imagen, invertidos, alineados a la derecha de la barra)
+            const scaleValues = [50000, 40000, 30000, 20000, 10000, 0];
+            let scaleLabelsContent = '';
+            scaleValues.forEach(value => {
+                scaleLabelsContent += `<div class="color-scale-label">${value >= 10000 ? (value/1000) + 'k' : value}</div>`;
+            });
+            document.getElementById('colorScaleLabels').innerHTML = scaleLabelsContent;
+            
+            // Agregar eventos de hover
+            const cells = document.querySelectorAll('.heatmap-cell');
+            cells.forEach(cell => {
+                cell.addEventListener('mouseenter', (e) => {
+                    const comuna = e.target.getAttribute('data-comuna');
+                    const rubro = e.target.getAttribute('data-rubro');
+                    const valor = e.target.getAttribute('data-valor');
+                    
+                    tooltip.innerHTML = `
+                        <strong>${comuna}</strong><br>
+                        <strong>${rubro}</strong><br>
+                        Empresas: ${valor}
+                    `;
+                    tooltip.style.display = 'block';
+                });
+                
+                cell.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY - 10) + 'px';
+                });
+                
+                cell.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
+            });
+        }
+
+        // Crear gráfico de barras apiladas
+        function createStackedChart() {
+            const svg = document.getElementById('stackedChart');
+            const tooltip = document.getElementById('tooltip');
+            const legend = document.getElementById('legend');
+            
+            const margin = {top: 50, right: 40, bottom: 100, left: 80};
+            const width = 1100 - margin.left - margin.right;
+            const height = 600 - margin.top - margin.bottom;
+            
+            const barWidth = width / stackedData.comunas.length * 0.8;
+            const barSpacing = width / stackedData.comunas.length;
+            
+            // Crear SVG content
+            let svgContent = `
+                <!-- Grid lines -->
+                ${[0, 20, 40, 60, 80, 100].map(tick => `
+                    <line x1="${margin.left}" y1="${margin.top + (height * (100 - tick) / 100)}" 
+                          x2="${margin.left + width}" y2="${margin.top + (height * (100 - tick) / 100)}" 
+                          class="grid-line"/>
+                `).join('')}
+                
+                <!-- Labels del eje Y -->
+                ${[0, 20, 40, 60, 80, 100].map(tick => `
+                    <text x="${margin.left - 10}" y="${margin.top + (height * (100 - tick) / 100) + 4}" 
+                          text-anchor="end" class="axis-text">
+                        ${tick}%
+                    </text>
+                `).join('')}
+                
+                <!-- Título eje Y -->
+                <text x="25" y="${margin.top + height/2}" 
+                      text-anchor="middle" class="axis-label" 
+                      transform="rotate(-90, 25, ${margin.top + height/2})">
+                    Porcentaje (%)
+                </text>
+                
+                <!-- Título eje X -->
+                <text x="${margin.left + width/2}" y="${margin.top + height + 65}" 
+                      text-anchor="middle" class="axis-label">
+                    Comuna
+                </text>
+                
+                <!-- Barras apiladas -->
+                ${stackedData.comunas.map((comuna, i) => {
+                    let y = margin.top + height;
+                    const x = margin.left + (i * barSpacing) + (barSpacing - barWidth) / 2;
+                    
+                    return stackedData.porcentajes[i].map((porcentaje, j) => {
+                        const segmentHeight = (height * porcentaje / 100);
+                        y -= segmentHeight;
+                        
+                        return `
+                            <rect x="${x}" y="${y}" 
+                                  width="${barWidth}" height="${segmentHeight}" 
+                                  fill="${colors.stacked[j]}" stroke="white" stroke-width="1"
+                                  class="stacked-segment" 
+                                  data-comuna="${comuna}"
+                                  data-rubro="${stackedData.rubros[j]}"
+                                  data-porcentaje="${porcentaje.toFixed(1)}"
+                                  style="cursor: pointer; transition: opacity 0.2s;"
+                                  onmouseover="this.style.opacity='0.8'"
+                                  onmouseout="this.style.opacity='1'"/>
+                            ${porcentaje > 5 ? `
+                                <text x="${x + barWidth/2}" y="${y + segmentHeight/2 + 6}" 
+                                      text-anchor="middle" 
+                                      style="font-family: Georgia, serif; font-size: 16px; font-weight: normal; fill: white; stroke: #1e293b; stroke-width: 0.8; paint-order: stroke; pointer-events: none;">
+                                    ${porcentaje.toFixed(1)}%
+                                </text>
+                            ` : ''}
+                        `;
+                    }).join('');
+                }).join('')}
+                
+                <!-- Labels de comunas -->
+                ${stackedData.comunas.map((comuna, i) => {
+                    const x = margin.left + (i * barSpacing) + barSpacing/2;
+                    return `
+                        <text x="${x}" y="${margin.top + height + 20}" 
+                              text-anchor="middle" class="axis-text">
+                            ${comuna}
+                        </text>
+                    `;
+                }).join('')}
+            `;
+            
+            svg.innerHTML = svgContent;
+            
+            // Crear leyenda
+            let legendContent = '';
+            stackedData.rubrosAbrev.forEach((rubro, i) => {
+                legendContent += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: ${colors.stacked[i]}"></div>
+                        <span>${rubro}</span>
+                    </div>
+                `;
+            });
+            legend.innerHTML = legendContent;
+            
+            // Agregar eventos de hover a los segmentos
+            const segments = svg.querySelectorAll('.stacked-segment');
+            segments.forEach(segment => {
+                segment.addEventListener('mouseenter', (e) => {
+                    const comuna = e.target.getAttribute('data-comuna');
+                    const rubro = e.target.getAttribute('data-rubro');
+                    const porcentaje = e.target.getAttribute('data-porcentaje');
+                    
+                    tooltip.innerHTML = `
+                        <strong>${comuna}</strong><br>
+                        ${stackedData.rubrosAbrev[stackedData.rubros.indexOf(rubro)]}: ${porcentaje}%
+                    `;
+                    tooltip.style.display = 'block';
+                });
+                
+                segment.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY - 10) + 'px';
+                });
+                
+                segment.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
+            });
+        }
+
+        // =============================================================================
+        // INICIALIZACIÓN
+        // =============================================================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNavigation();
+            initTrendsCharts(); // Cargar la primera sección por defecto
+            
+            // Redimensionar gráficos al cambiar tamaño de ventana
+            window.addEventListener('resize', () => {
+                const activeSection = document.querySelector('.section.active');
+                if (activeSection) {
+                    const sectionId = activeSection.id;
+                    setTimeout(() => {
+                        if (sectionId === 'tendencias') {
+                            initTrendsCharts();
+                        } else if (sectionId === 'empresas') {
+                            initEmpresasComunaChart();
+                        } else if (sectionId === 'rubros') {
+                            initRubrosCharts();
+                        }
+                    }, 100);
+                }
+            });
+            
+            console.log('Dashboard de análisis empresarial cargado exitosamente');
+        });
+    </script>
+</body>
+</html>
